@@ -19,7 +19,7 @@ class Users(Base):
 
 
 class Articles(Base):
-    __tablename__ = 'aritcles'
+    __tablename__ = 'articles'
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str]

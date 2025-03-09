@@ -1,11 +1,15 @@
 from fastapi import FastAPI
 from app.handler.blogs_router import router
-from app.db.orm import create_table,register_user,create_articles,delete_articles,update_article,make_admin,deprivation_of_admin
+from app.db.orm import RemoteUser,RemoteArticle,InitDB
 
 app = FastAPI()
 
 app.include_router(router)
 
+
+
 if __name__ == '__main__':
-    create_table()
-    register_user('Egor')
+    InitDB.create_table()
+    RemoteUser.register_user('Egor')
+    RemoteArticle.create_articles('Egor',title='cms',description='Today i will make cms system')
+    RemoteArticle.update_article('Egor',title='Update cms',description='I make update cms')
