@@ -29,14 +29,27 @@ class RemoteUser:
             if exist_user:
                 return {'Create user': 'User already exists'}
             
-            result = session.execute(insert(Users).values(username=username,is_admin=False))
+            result = session.execute(insert(Users).values(username=username,is_admin=False,have_banned=False))
             session.commit()
             return result
+        
+    @staticmethod
+    def have_admin(username:str):
+        with Session() as session:
+            admin = session.execute(select(Users).where(Users.username == username,Users.is_admin == True))
+
+            if not admin:
+                return {'Admin': 'False'}
+            
+            return {'Admin': 'True'}
     
+
+class RemoteAdmin:
+
     @staticmethod
     def delete_user(username):
         with Session() as session:
-            exist_user = session.execute(select(Users).where(Users.username == username)).scalars().first()
+            exist_user = session.execute(select(Users).where(Users.username == username,Users.is_admin == True)).scalars().first()
 
             if exist_user:
                 stmt = session.execute(delete(Users).where(Users.username == username))
@@ -48,6 +61,14 @@ class RemoteUser:
     @staticmethod
     def make_admin(username):
         with Session() as session:
+            exist_user = session.execute(select(Users).where(Users.username == username)).scalars().first()
+            law = session.execute(select(Users).where(Users.username == username,Users.is_admin == True)).scalars().first()
+
+            if not exist_user:
+                return {'User': 'Not found'}
+            if law:
+                return {'Admin':' User is admin'}
+
             stmt = update(Users).where(Users.username == username).values(is_admin=True)
             session.execute(stmt)
             session.commit()
@@ -55,12 +76,52 @@ class RemoteUser:
     @staticmethod
     def deprivation_of_admin(username):
         with Session() as session:
+            exist_user = session.execute(select(Users).where(Users.username == username,Users.is_admin == True)).scalars().first()
+
+            if not exist_user:
+                return {'User': 'Not found'}
+
             stmt = update(Users).where(Users.username == username).values(is_admin=False)
             session.execute(stmt)
             session.commit()
 
+    @staticmethod
+    def ban_user(username:str,data_banned: datetime):
+        with Session() as session:
+            exist_user = session.execute(select(Users).where(Users.username == username,Users.is_admin == True)).scalars().first()
+
+            if not exist_user:
+                return {'User': 'Not found'}
+            
+            stmt = update(Users).where(Users.username == username).values(have_banned=True,ban_expired=data_banned)
+            session.execute(stmt)
+            session.commit()
+
+    @staticmethod
+    def unban_user(username:str):
+        with Session() as session:
+            exist_user = session.execute(select(Users).where(Users.username == username,Users.is_admin == True)).scalars().first()
+
+            if not exist_user:
+                return {'User': 'Not found'}
+            
+            stmt = update(Users).where(Users.username == username).values(have_banned=False,ban_expired=None)
+            session.execute(stmt)
+            session.commit()
 
 class RemoteArticle:
+
+    @staticmethod
+    def select_articles(username:str):
+        with Session() as session:
+            user = session.execute(select(Users).where(Users.username == username)).scalars().first()
+
+            if not user:
+                return {'User': 'Not found'}
+            
+            stmt = select(Articles).where(Articles.username == username,Articles.have_banned == False)
+            session.execute(stmt)
+            return stmt
 
     @staticmethod
     def create_articles(username:str,title:str,description:str):
@@ -75,6 +136,8 @@ class RemoteArticle:
                 description=description,
                 username=username,
                 user_id=user.id,  # связываем статью с пользователем
+                have_banned=False,
+                ban_expired=None,
                 created_at=datetime.utcnow(),  # устанавливаем время создания
                 updated_at=datetime.utcnow()   # устанавливаем время обновления
             )
@@ -86,7 +149,7 @@ class RemoteArticle:
     @staticmethod
     def update_article(username:str,title:str,description:str,):
         with Session() as session:
-            exist_article = session.execute(select(Articles).where(Articles.username == username)).scalars().first()
+            exist_article = session.execute(select(Articles).where(Articles.username == username, Articles.title == title)).scalars().first()
 
             if not exist_article:
                 return {'Error': 'Article not found'}
@@ -100,8 +163,30 @@ class RemoteArticle:
     @staticmethod
     def delete_articles(username,title):
         with Session() as session:
-            result = session.execute(delete(Articles).where(Articles.username == username, Articles.title == title))
+            result = session.execute(delete(Articles).where(Articles.username == username, Articles.title == title)).scalars().first()
             session.commit()
             return result
     
+    @staticmethod
+    def ban_article(username:str,title:str):
+        with Session() as session:
+            exist_article = session.execute(select(Articles).where(Articles.username == username,Articles.title == title).join(Users).where(Users.is_admin == True)).scalars().first()
 
+            if not exist_article:
+                return {'Article': 'Not found'}
+            
+            stmt = update(Articles).where(Articles.username == username,Articles.title == title).values(have_banned=True)
+            session.execute(stmt)
+            session.commit()
+
+    @staticmethod
+    def unban_article(username:str,title:str):
+        with Session() as session:
+            exist_article = session.execute(select(Articles).where(Articles.username == username,Articles.title == title).join(Users).where(Users.is_admin == True)).scalars().first()
+
+            if not exist_article:
+                return {'Article': 'Not found'}
+            
+            stmt = update(Articles).where(Articles.username == username,Articles.title == title).values(have_banned=False)
+            session.execute(stmt)
+            session.commit()
