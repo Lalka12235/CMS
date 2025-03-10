@@ -22,7 +22,7 @@ class InitDB:
 class RemoteUser:
 
     @staticmethod
-    def register_user(username):
+    def register_user(username:str):
         with Session() as session:
             exist_user = session.execute(select(Users).where(Users.username == username)).scalars().first()
 
@@ -48,7 +48,7 @@ class RemoteUser:
 class RemoteAdmin:
 
     @staticmethod
-    def delete_user(username):
+    def delete_user(username:str):
         with Session() as session:
             exist_user = session.execute(select(Users).where(Users.username == username,Users.is_admin == True)).scalars().first()
 
@@ -60,7 +60,7 @@ class RemoteAdmin:
             return {'User':'Not found'}
         
     @staticmethod
-    def make_admin(username):
+    def make_admin(username:str):
         with Session() as session:
             exist_user = session.execute(select(Users).where(Users.username == username)).scalars().first()
             law = session.execute(select(Users).where(Users.username == username,Users.is_admin == True)).scalars().first()
@@ -75,7 +75,7 @@ class RemoteAdmin:
             session.commit()
 
     @staticmethod
-    def deprivation_of_admin(username):
+    def deprivation_of_admin(username:str):
         with Session() as session:
             exist_user = session.execute(select(Users).where(Users.username == username,Users.is_admin == True)).scalars().first()
 
@@ -167,7 +167,7 @@ class RemoteArticle:
             session.commit()
 
     @staticmethod
-    def delete_articles(username,title):
+    def delete_articles(username:str,title:str):
         with Session() as session:
             result = session.execute(delete(Articles).where(Articles.username == username, Articles.title == title))
             
