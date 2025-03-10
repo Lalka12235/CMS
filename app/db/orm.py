@@ -42,6 +42,7 @@ class RemoteUser:
                 return {'Admin': 'False'}
             
             return {'Admin': 'True'}
+        
     
 
 class RemoteAdmin:
@@ -86,14 +87,14 @@ class RemoteAdmin:
             session.commit()
 
     @staticmethod
-    def ban_user(username:str,data_banned: datetime):
+    def ban_user(username:str):
         with Session() as session:
             exist_user = session.execute(select(Users).where(Users.username == username,Users.is_admin == True)).scalars().first()
 
             if not exist_user:
                 return {'User': 'Not found'}
             
-            stmt = update(Users).where(Users.username == username).values(have_banned=True,ban_expired=data_banned)
+            stmt = update(Users).where(Users.username == username).values(have_banned=True)
             session.execute(stmt)
             session.commit()
 
@@ -105,7 +106,7 @@ class RemoteAdmin:
             if not exist_user:
                 return {'User': 'Not found'}
             
-            stmt = update(Users).where(Users.username == username).values(have_banned=False,ban_expired=None)
+            stmt = update(Users).where(Users.username == username).values(have_banned=False)
             session.execute(stmt)
             session.commit()
 
@@ -120,8 +121,8 @@ class RemoteArticle:
                 return {'User': 'Not found'}
             
             stmt = select(Articles).where(Articles.username == username,Articles.have_banned == False)
-            session.execute(stmt)
-            return stmt
+            articles = session.execute(stmt).scalars().all()
+            return articles
 
     @staticmethod
     def create_articles(username:str,title:str,description:str):
@@ -137,7 +138,6 @@ class RemoteArticle:
                 username=username,
                 user_id=user.id,  # связываем статью с пользователем
                 have_banned=False,
-                ban_expired=None,
                 created_at=datetime.utcnow(),  # устанавливаем время создания
                 updated_at=datetime.utcnow()   # устанавливаем время обновления
             )
@@ -145,11 +145,17 @@ class RemoteArticle:
         
             session.add(new_article)
             session.commit()
+            return new_article
 
     @staticmethod
     def update_article(username:str,title:str,description:str,):
         with Session() as session:
             exist_article = session.execute(select(Articles).where(Articles.username == username, Articles.title == title)).scalars().first()
+
+            if exist_article.title != title:
+                exist_article.title = title
+            if description != exist_article.description:
+                exist_article.description = description
 
             if not exist_article:
                 return {'Error': 'Article not found'}
@@ -163,9 +169,12 @@ class RemoteArticle:
     @staticmethod
     def delete_articles(username,title):
         with Session() as session:
-            result = session.execute(delete(Articles).where(Articles.username == username, Articles.title == title)).scalars().first()
+            result = session.execute(delete(Articles).where(Articles.username == username, Articles.title == title))
+            
+            if not result:
+                return {'Article': 'Not found'}
+            
             session.commit()
-            return result
     
     @staticmethod
     def ban_article(username:str,title:str):
@@ -176,8 +185,9 @@ class RemoteArticle:
                 return {'Article': 'Not found'}
             
             stmt = update(Articles).where(Articles.username == username,Articles.title == title).values(have_banned=True)
-            session.execute(stmt)
+            result = session.execute(stmt)
             session.commit()
+            return result
 
     @staticmethod
     def unban_article(username:str,title:str):
@@ -188,5 +198,6 @@ class RemoteArticle:
                 return {'Article': 'Not found'}
             
             stmt = update(Articles).where(Articles.username == username,Articles.title == title).values(have_banned=False)
-            session.execute(stmt)
+            result = session.execute(stmt)
             session.commit()
+            return result

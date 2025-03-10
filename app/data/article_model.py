@@ -2,12 +2,15 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class Article(BaseModel):
-    id: int
     title: str
     username: str
     description: str
-    have_banned: bool
-    created_at: datetime
+    have_banned: bool = False
+    created_at: datetime = datetime.utcnow()
+    updated_at: datetime | None = None
+
+class UpdateArticle(BaseModel):
+    description:str
     updated_at: datetime | None = None
 
 class User(BaseModel):
