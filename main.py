@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.handler.blogs_router import article
 from app.handler.admin_router import admin
 from app.handler.user_router import user
+from app.auth.auth import auth
 from app.db.orm import InitDB
 
 app = FastAPI()
@@ -9,6 +10,7 @@ app = FastAPI()
 app.include_router(article)
 app.include_router(admin)
 app.include_router(user)
+app.include_router(auth)
 
 
 

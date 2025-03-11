@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from app.data.orm_model import Base, Users,Articles
 from app.config import settings
 from datetime import datetime
+from app.utils.hash import make_hash_pass
 
 engine = create_engine(
     url=settings.DATABASE_URL_psycopg,
@@ -22,16 +23,23 @@ class InitDB:
 class RemoteUser:
 
     @staticmethod
-    def register_user(username:str):
+    def register_user(username:str,password:str):
         with Session() as session:
             exist_user = session.execute(select(Users).where(Users.username == username)).scalars().first()
+            hash_pass = make_hash_pass(password)
 
             if exist_user:
                 return {'Create user': 'User already exists'}
             
-            result = session.execute(insert(Users).values(username=username,is_admin=False,have_banned=False))
+            result = session.execute(insert(Users).values(username=username,password=hash_pass,is_admin=False,have_banned=False))
             session.commit()
             return result
+        
+    @staticmethod
+    def login_user(username: str):
+        with Session() as session:
+            user = session.execute(select(Users).where(Users.username == username)).scalars().first()
+            return user
         
     @staticmethod
     def have_admin(username:str):
@@ -39,9 +47,9 @@ class RemoteUser:
             admin = session.execute(select(Users).where(Users.username == username,Users.is_admin == True))
 
             if not admin:
-                return {'Admin': 'False'}
+                return False
             
-            return {'Admin': 'True'}
+            return True
         
     
 

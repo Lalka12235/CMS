@@ -13,6 +13,7 @@ class Users(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str]
+    password: Mapped[str]
     have_banned: Mapped[bool]
     ban_expired: Mapped[datetime | None]
     is_admin: Mapped[bool]

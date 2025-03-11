@@ -3,15 +3,15 @@ from datetime import datetime
 
 class Article(BaseModel):
     title: str
-    username: str
     description: str
-    have_banned: bool = False
     created_at: datetime = datetime.utcnow()
     updated_at: datetime | None = None
+
 
 class UpdateArticle(BaseModel):
     description:str
     updated_at: datetime | None = None
+
 
 class User(BaseModel):
     username: str
@@ -20,5 +20,20 @@ class User(BaseModel):
     blogs: list[Article] = []
     is_admin: bool = False
 
+
+class RegisterUser(BaseModel):
+    username:str
+    password: str
+
+
+class LoginUser(RegisterUser):
+    pass
+
+
 class ADmin(User):
     is_admin: bool = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
