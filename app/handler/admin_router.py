@@ -6,6 +6,9 @@ admin = APIRouter(tags=['Admin system'])
 
 @admin.delete('/blogs/remote_user/delete_user',tags=['Admin system'])
 async def delete_user_in_system(username: str, current_admin: str = Depends(get_current_admin)):
+    if username != current_admin:
+        raise HTTPException(status_code=403, detail="")
+
     delete = RemoteAdmin.delete_user(username)
     if delete:
         return {'Delete': 'Success'}
@@ -13,6 +16,9 @@ async def delete_user_in_system(username: str, current_admin: str = Depends(get_
 
 @admin.put('/blogs/remote_user/ban',tags=['Admin system'])
 async def ban_user_in_system(username: str, current_admin: str = Depends(get_current_admin)):
+    if username != current_admin:
+        raise HTTPException(status_code=403, detail="")
+
     ban = RemoteAdmin.ban_user(username)
     if ban:
         return {'Ban': 'Success'}
@@ -20,6 +26,9 @@ async def ban_user_in_system(username: str, current_admin: str = Depends(get_cur
 
 @admin.put('/blogs/remote_user/unban',tags=['Admin system'])
 async def unban_user_in_system(username: str, current_admin: str = Depends(get_current_admin)):
+    if username != current_admin:
+        raise HTTPException(status_code=403, detail="")
+
     unban = RemoteAdmin.unban_user(username)
     if unban:
         return {'Unban': 'Success'}
@@ -27,6 +36,9 @@ async def unban_user_in_system(username: str, current_admin: str = Depends(get_c
 
 @admin.put('/blogs/remote_user/make_admin/{username}',tags=['Admin system'])
 async def make_admin_user(username: str, current_admin: str = Depends(get_current_admin)):
+    if username != current_admin:
+        raise HTTPException(status_code=403, detail="")
+
     admin_status = RemoteUser.have_admin(username)
     if admin_status:
         return {'Admin': 'User is already Admin'}

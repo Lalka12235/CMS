@@ -156,7 +156,7 @@ class RemoteArticle:
             return new_article
 
     @staticmethod
-    def update_article(username:str,title:str,description:str,):
+    def update_article(username:str,title:str,description:str):
         with Session() as session:
             exist_article = session.execute(select(Articles).where(Articles.username == username, Articles.title == title)).scalars().first()
 
