@@ -1,8 +1,13 @@
 ## Deployment
 
 
+Build
+```bash
+  docker build -t cms-system.
+
+```
 Run
 ```bash
-  fastapi dev main.py
+  docker run -d -p 8000:8080 cms-system
 
 ```
