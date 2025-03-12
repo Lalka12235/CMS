@@ -1,17 +1,15 @@
 import pytest
+from app.data.pydantic_model import RegisterUser
 
 
 @pytest.fixture
 def test_user_for_register():
-    return {
-        'username': 'Egor'
-    }
-
+    return RegisterUser('Egor','koresh')
 
 @pytest.fixture
-def test_user_for_func():
+def test_user_for_admin():
     return {
-        'username': 'Max'
+        'username': 'Egor',
     }
 
 @pytest.fixture

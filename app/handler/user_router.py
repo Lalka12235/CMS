@@ -4,8 +4,8 @@ from app.db.orm import RemoteUser
 
 user = APIRouter(tags=['Register'])
 
-@user.post('/blogs/register/{username}')
-async def register_user(user:RegisterUser ):
+@user.post('/blogs/register')
+async def register_user(user:RegisterUser):
     register = RemoteUser.register_user(user.username,user.password)
     if not register:
         return {'Register': 'Not Success'}
