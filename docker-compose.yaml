@@ -10,8 +10,8 @@ services:
     working_dir: /app
     ports:
       - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/blogs
+     env_file:
+      - ./.env
     depends_on:
       - db
     command: >
@@ -23,9 +23,9 @@ services:
     container_name: postgres_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: blogs
+      - POSTGRES_PASSWORD=${DB_PASS} 
+      - POSTGRES_USER=${DB_USER}
+      POSTGRES_DB=${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
