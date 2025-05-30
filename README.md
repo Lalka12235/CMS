@@ -11,11 +11,11 @@ Run
   docker run -d -p 8000:8080 cms-system
 
 ```
-## Stack
-Python
-FastAPI
-SQLAlchemy
-SQL
-PostgreSQL
-Docker
+
+## 🛠 Tech Stack
+
+- **Backend**: Python (FastAPI)
+- **Database**: PostgreSQL
+- **ORM**: SQLAlchemy
+- **Containerization**: Docker
 
