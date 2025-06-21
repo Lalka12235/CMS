@@ -1,5 +1,22 @@
-## Deployment
+# SwiftCMS
+SwiftCMS is a minimalistic but powerful CMS developed using:
 
+# Tech stack:
+- Python 3.13
+- FastAPI
+- SQLAlchemy 2.0
+- PostgreSQL
+- Docker
+
+Key features:
+✅ Content creation and management (articles, pages)
+✅ Flexible role system (admin, editor, guest)
+✅ RESTful API for frontend integration
+✅ Tags and categories support
+
+
+
+## Deployment
 
 Build
 ```bash
@@ -11,11 +28,3 @@ Run
   docker run -d -p 8000:8080 cms-system
 
 ```
-
-## 🛠 Tech Stack
-
-- **Backend**: Python (FastAPI)
-- **Database**: PostgreSQL
-- **ORM**: SQLAlchemy
-- **Containerization**: Docker
-
