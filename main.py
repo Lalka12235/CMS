@@ -3,7 +3,6 @@ from app.handler.blogs_router import article
 from app.handler.admin_router import admin
 from app.handler.user_router import user
 from app.auth.auth import auth
-from app.db.orm import InitDB
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -30,8 +29,3 @@ app.include_router(article)
 app.include_router(admin)
 app.include_router(user)
 app.include_router(auth)
-
-
-
-if __name__ == '__main__':
-    InitDB.create_table()

@@ -1,24 +1,9 @@
-from sqlalchemy import create_engine,insert,delete,update,select
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import insert,delete,update,select
 from app.data.orm_model import Base, Users,Articles
-from app.config import settings
 from datetime import datetime
 from app.utils.hash import make_hash_pass
+from app.session import Session
 
-engine = create_engine(
-    url=settings.DATABASE_URL_psycopg,
-    echo=True
-)
-
-Session = sessionmaker(engine)
-
-class InitDB:
-
-    @staticmethod
-    def create_table():
-        Base.metadata.drop_all(engine)
-        Base.metadata.create_all(engine)
-        return {'Create db': 'True'}
 
 class RemoteUser:
 
